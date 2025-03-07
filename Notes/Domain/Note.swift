@@ -6,17 +6,20 @@
 //
 
 import Foundation
+import SwiftUI
 
 class Note: Identifiable, ObservableObject, Equatable, Hashable {
     let id = UUID()
     var title: String
     var content: String
     var date: Date
+    @Published var color: NoteColor
     
-    init(title: String, content: String) {
+    init(title: String, content: String, color: NoteColor = .grey) {
         self.title = title
         self.content = content
         self.date = Date()
+        self.color = color
     }
     
     static func == (lhs: Note, rhs: Note) -> Bool {

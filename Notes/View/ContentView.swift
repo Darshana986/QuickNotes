@@ -26,8 +26,14 @@ struct ContentView: View {
                 }
             
         }, detail: {
-            NoteEditorView(note: $foldersList.selectedNote)
-                .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
+            if let note = foldersList.selectedNote {
+                NoteEditorView(note: note)
+                    .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Text("Empty")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.tertiary)
+            }
         })
         .navigationTitle(foldersList.selectedFolder?.folderName ?? "Notes")
         .toolbar {

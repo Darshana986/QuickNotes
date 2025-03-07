@@ -8,14 +8,21 @@
 import SwiftUI
 
 struct NoteEditorView: View {
-    @Binding var note: Note?
+    @ObservedObject var note: Note
     
     var body: some View {
-        if note != nil {
             VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Spacer()
+                    ColorPickerButton(selectedColor: Binding(
+                        get: { note.color },
+                        set: { note.color = $0 }
+                    ))
+                        .background(Color.clear)
+                }
                 TextField("Title", text: Binding(
-                    get: { note?.title ?? "" },
-                    set: { note?.title = $0 }
+                    get: { note.title},
+                    set: { note.title = $0 }
                 ))
                     .font(.title2)
                     .bold()
@@ -24,29 +31,26 @@ struct NoteEditorView: View {
                     .padding(.vertical, 10)
                 
                 TextEditor(text: Binding(
-                    get: { note?.content ?? "" },
-                    set: { note?.content = $0 }
+                    get: { note.content },
+                    set: { note.content = $0 }
                 ))
                     .font(.body)
                     .lineSpacing(2)
                     .foregroundStyle(.secondary)
+                    .scrollContentBackground(.hidden)
+                    .background(Color.clear)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.never)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(10)
-            .background(Color.white)
-        } else {
-            Text("Empty")
-                .font(.system(size: 15))
-                .foregroundStyle(.tertiary)
-        }
+            .background(note.color.color)
         
     }
 }
 
 #Preview {
     NavigationStack {
-        NoteEditorView(note: .constant(Note(title: "Sample Title", content: "Edit this content...")))
+        NoteEditorView(note: Note(title: "Sample Title", content: "Edit this content..."))
     }
 }
