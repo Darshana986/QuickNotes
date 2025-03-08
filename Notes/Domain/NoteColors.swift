@@ -58,4 +58,24 @@ enum NoteColor: Int, CaseIterable {
             }
         }
     }
+    
+    var darkColor: Color {
+        switch self {
+        case .green:
+            return Color(red: 210/255, green: 230/255, blue: 140/255)
+        case .purple:
+            return Color(red: 180/255, green: 170/255, blue: 230/255)
+        case .pink:
+            return Color(red: 220/255, green: 190/255, blue: 230/255)
+        case .yellow:
+            return Color(red: 230/255, green: 220/255, blue: 130/255)
+        case .white:
+            return Color.white
+        case .blue:
+            return Color(red: 130/255, green: 180/255, blue: 230/255)
+        case .grey:
+            return Color(red: 190/255, green: 210/255, blue: 220/255)
+        }
+    }
+
 }

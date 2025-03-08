@@ -22,7 +22,7 @@ struct ColorPickerButton: View {
             }
         } label: {
             Circle()
-                .fill(selectedColor.color)
+                .fill(selectedColor.darkColor)
                 .frame(width: size, height: size)
                 .overlay(Circle().stroke(Color.black.opacity(0.4), lineWidth: 1))
         }
