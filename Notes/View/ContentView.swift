@@ -10,32 +10,32 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var foldersList = FolderList()
     @StateObject private var selectedAttributes = SelectedAttributes()
+    @State var showAllColumns: Bool = true
     @State private var showDeleteAlert = false
     
     var body: some View {
-        NavigationSplitView(sidebar: {
-            SidebarView(folders: $foldersList.folders, selectedFolder: $selectedAttributes.selectedFolder, selectedNote: $selectedAttributes.selectedNote)
-                .frame(minWidth: 200)
-        }, content: {
-            if selectedAttributes.selectedFolder == nil || selectedAttributes.selectedFolder?.notes.isEmpty == true {
-                    Text("No Notes")
-                        .font(.system(size: 15))
-                        .foregroundStyle(.tertiary)
-                } else {
-                    NotesListView(selectedAttributes: selectedAttributes )
+        Group {
+            if showAllColumns {
+                NavigationSplitView(sidebar: {
+                    SidebarView(folders: $foldersList.folders, selectedFolder: $selectedAttributes.selectedFolder, selectedNote: $selectedAttributes.selectedNote)
                         .frame(minWidth: 200)
-                }
-            
-        }, detail: {
-            if let note = selectedAttributes.selectedNote {
-                NoteEditorView(note: note)
-                    .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
+                }, content: {
+                    if selectedAttributes.selectedFolder == nil || selectedAttributes.selectedFolder?.notes.isEmpty == true {
+                        Text("No Notes")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.tertiary)
+                    } else {
+                        NotesListView(selectedAttributes: selectedAttributes )
+                            .frame(minWidth: 200)
+                    }
+                    
+                }, detail: {
+                    DetailView(selectedAttributes: selectedAttributes, showAllColumns: $showAllColumns)
+                })
             } else {
-                Text("Empty")
-                    .font(.system(size: 15))
-                    .foregroundStyle(.tertiary)
+                DetailView(selectedAttributes: selectedAttributes, showAllColumns: $showAllColumns)
             }
-        })
+        }
         .navigationTitle(selectedAttributes.selectedFolder?.folderName ?? "Notes")
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
@@ -88,4 +88,21 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+}
+
+
+struct DetailView: View {
+    @ObservedObject var selectedAttributes: SelectedAttributes
+    @Binding var showAllColumns: Bool
+    
+    var body: some View {
+        if let note = selectedAttributes.selectedNote {
+            NoteEditorView(note: note, showAllColumns: $showAllColumns)
+                .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            Text("Empty")
+                .font(.system(size: 15))
+                .foregroundStyle(.tertiary)
+        }
+    }
 }

@@ -9,10 +9,17 @@ import SwiftUI
 
 struct NoteEditorView: View {
     @ObservedObject var note: Note
+    @Binding var showAllColumns: Bool
     
     var body: some View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
+                    Button(action: {
+                        showAllColumns.toggle()
+                    }) {
+                        Image(systemName: showAllColumns ? "arrow.up.left.and.arrow.down.right" : "arrow.down.right.and.arrow.up.left" )
+                    }
+                    .buttonStyle(PlainButtonStyle())
                     Spacer()
                     ColorPickerButton(selectedColor: Binding(
                         get: { note.color },
@@ -20,20 +27,21 @@ struct NoteEditorView: View {
                     ))
                         .background(Color.clear)
                 }
-                TextField("Title", text: Binding(
-                    get: { note.title},
-                    set: { note.title = $0 }
-                ))
+                Group {
+                    TextField("Title", text: Binding(
+                        get: { note.title},
+                        set: { note.title = $0 }
+                    ))
                     .font(.title2)
                     .bold()
                     .textFieldStyle(.plain)
                     .padding(.horizontal, 2)
                     .padding(.vertical, 10)
-                
-                TextEditor(text: Binding(
-                    get: { note.content },
-                    set: { note.content = $0 }
-                ))
+                    
+                    TextEditor(text: Binding(
+                        get: { note.content },
+                        set: { note.content = $0 }
+                    ))
                     .font(.body)
                     .lineSpacing(2)
                     .foregroundStyle(.secondary)
@@ -41,6 +49,8 @@ struct NoteEditorView: View {
                     .background(Color.clear)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollIndicators(.never)
+                }
+                .padding(.horizontal, 25)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding(10)
@@ -51,6 +61,6 @@ struct NoteEditorView: View {
 
 #Preview {
     NavigationStack {
-        NoteEditorView(note: Note(title: "Sample Title", content: "Edit this content..."))
+        NoteEditorView(note: Note(title: "Sample Title", content: "Edit this content..."), showAllColumns: Binding(get: {true}, set: {_ in }))
     }
 }
