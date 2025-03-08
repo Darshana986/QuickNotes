@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct NotesListView: View {
-    @Binding var selectedFolder: Folder?
-    @Binding var selectedNote: Note?
+    @ObservedObject var selectedAttributes: SelectedAttributes
     @State private var hoveredNote: Note?
     var body: some View {
-        List(selectedFolder?.notes ?? [], selection: $selectedNote) { note in
+        List(selectedAttributes.selectedFolder?.notes ?? [], selection: $selectedAttributes.selectedNote) { note in
             VStack(alignment: .leading, spacing: 4, content: {
                 Text(note.title)
                     .font(.headline)
@@ -28,6 +27,12 @@ struct NotesListView: View {
                     Text(note.formattedDate(date: note.date))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                    Spacer()
+                    ColorPickerButton(selectedColor: Binding(
+                        get: { note.color },
+                        set: { note.color = $0 }
+                    ), size: 12)
+                    .background(Color.clear)
                 }
                 .padding(.top, 7)
             })
@@ -37,11 +42,11 @@ struct NotesListView: View {
             .padding(.horizontal, 7)
             .background(
                 RoundedRectangle(cornerRadius: 5)
-                    .fill(selectedNote == note ? Color.blue.opacity(0.2) : hoveredNote == note ? Color.gray.opacity(0.2) : Color.clear)
+                    .fill(selectedAttributes.selectedNote == note ? Color.blue.opacity(0.2) : hoveredNote == note ? Color.gray.opacity(0.2) : Color.clear)
             )
             .contentShape(Rectangle())
             .onTapGesture {
-                selectedNote = note
+                selectedAttributes.selectedNote = note
             }
             .onHover { isHovering in
                 hoveredNote = isHovering ? note : nil
@@ -52,5 +57,5 @@ struct NotesListView: View {
 }
 
 #Preview {
-    NotesListView(selectedFolder: Binding.constant(defaultFoldersDict[.all]!), selectedNote: Binding.constant(nil))
+    NotesListView(selectedAttributes: SelectedAttributes())
 }

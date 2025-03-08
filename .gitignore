@@ -1,1 +1,7 @@
+/native/Cliq/build
+/native/Cliq/Pods
+/native/Cliq/Cliq.xcworkspace/xcuserdata/*
+*.xcuserdatad
+*.xcbkptlist
 *.xcuserstate
+*.DS_Store

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ColorPickerButton: View {
     @Binding var selectedColor: NoteColor
+    var size: CGFloat = 15
 
     var body: some View {
         Menu {
@@ -22,7 +23,7 @@ struct ColorPickerButton: View {
         } label: {
             Circle()
                 .fill(selectedColor.color)
-                .frame(width: 15, height: 15)
+                .frame(width: size, height: size)
                 .overlay(Circle().stroke(Color.black.opacity(0.4), lineWidth: 1))
         }
         .buttonStyle(PlainButtonStyle())

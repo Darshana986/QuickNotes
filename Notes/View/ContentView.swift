@@ -9,24 +9,25 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var foldersList = FolderList()
+    @StateObject private var selectedAttributes = SelectedAttributes()
     @State private var showDeleteAlert = false
     
     var body: some View {
         NavigationSplitView(sidebar: {
-            SidebarView(folders: $foldersList.folders, selectedFolder: $foldersList.selectedFolder, selectedNote: $foldersList.selectedNote)
+            SidebarView(folders: $foldersList.folders, selectedFolder: $selectedAttributes.selectedFolder, selectedNote: $selectedAttributes.selectedNote)
                 .frame(minWidth: 200)
         }, content: {
-            if foldersList.selectedFolder == nil || foldersList.selectedFolder?.notes.isEmpty == true {
+            if selectedAttributes.selectedFolder == nil || selectedAttributes.selectedFolder?.notes.isEmpty == true {
                     Text("No Notes")
                         .font(.system(size: 15))
                         .foregroundStyle(.tertiary)
                 } else {
-                    NotesListView(selectedFolder: $foldersList.selectedFolder, selectedNote: $foldersList.selectedNote)
+                    NotesListView(selectedAttributes: selectedAttributes )
                         .frame(minWidth: 200)
                 }
             
         }, detail: {
-            if let note = foldersList.selectedNote {
+            if let note = selectedAttributes.selectedNote {
                 NoteEditorView(note: note)
                     .frame(minWidth: 200, maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -35,13 +36,13 @@ struct ContentView: View {
                     .foregroundStyle(.tertiary)
             }
         })
-        .navigationTitle(foldersList.selectedFolder?.folderName ?? "Notes")
+        .navigationTitle(selectedAttributes.selectedFolder?.folderName ?? "Notes")
         .toolbar {
             ToolbarItemGroup(placement: .automatic) {
                 Button(action: addNote) {
                     Image(systemName: "square.and.pencil")
                 }
-                if foldersList.selectedNote != nil {
+                if selectedAttributes.selectedNote != nil {
                     Button(action: { showDeleteAlert = true }) {
                         Image(systemName: "trash")
                     }
@@ -57,24 +58,24 @@ struct ContentView: View {
     
     func addNote() {
         let newNote = Note(title: "New Note", content: "This is a new note")
-        foldersList.selectedFolder?.notes.insert(newNote, at: 0)
-        foldersList.selectedNote = newNote
+        selectedAttributes.selectedFolder?.notes.insert(newNote, at: 0)
+        selectedAttributes.selectedNote = newNote
     }
     
     func deleteNote() {
-        guard foldersList.selectedFolder != nil, foldersList.selectedFolder?.notes.count ?? 0 > 0, foldersList.selectedNote != nil else {return}
-        if let index = foldersList.selectedFolder!.notes.firstIndex(where: {
-            $0.id == foldersList.selectedNote!.id
+        guard selectedAttributes.selectedFolder != nil, selectedAttributes.selectedFolder?.notes.count ?? 0 > 0, selectedAttributes.selectedNote != nil else {return}
+        if let index = selectedAttributes.selectedFolder!.notes.firstIndex(where: {
+            $0.id == selectedAttributes.selectedNote!.id
         }) {
-            let noteToDelete = foldersList.selectedFolder!.notes[index]
+            let noteToDelete = selectedAttributes.selectedFolder!.notes[index]
             insertInTrashFolder(note: noteToDelete)
             
-            foldersList.selectedFolder!.notes.remove(at: index)
+            selectedAttributes.selectedFolder!.notes.remove(at: index)
             guard index >= 0 else { return}
-            if index >= foldersList.selectedFolder!.notes.count {
-                foldersList.selectedNote = foldersList.selectedFolder!.notes.last
+            if index >= selectedAttributes.selectedFolder!.notes.count {
+                selectedAttributes.selectedNote = selectedAttributes.selectedFolder!.notes.last
             } else {
-                foldersList.selectedNote = foldersList.selectedFolder?.notes[index]
+                selectedAttributes.selectedNote = selectedAttributes.selectedFolder?.notes[index]
             }
         }
     }

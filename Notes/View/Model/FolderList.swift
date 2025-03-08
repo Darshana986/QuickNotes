@@ -9,8 +9,6 @@ import SwiftUI
 
 class FolderList: ObservableObject {
     @Published var folders: [Folder] = Folder.getDefaultFolders()
-    @Published var selectedFolder: Folder? = defaultFoldersDict[.all]
-    @Published var selectedNote: Note? = nil
     
     func getFolder(folderType: ParentFolderType) -> Folder? {
         return defaultFoldersDict[folderType]
