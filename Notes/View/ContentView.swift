@@ -25,8 +25,10 @@ struct ContentView: View {
                             .font(.system(size: 15))
                             .foregroundStyle(.tertiary)
                     } else {
-                        NotesListView(selectedAttributes: selectedAttributes )
-                            .frame(minWidth: 200)
+                        NotesListView(selectedAttributes: selectedAttributes, onDeleteNote: { note in
+                            deleteNote(note: note)
+                        })
+                        .frame(minWidth: 200)
                     }
                     
                 }, detail: {
@@ -65,25 +67,29 @@ struct ContentView: View {
     
     func deleteNote() {
         guard selectedAttributes.selectedFolder != nil, selectedAttributes.selectedFolder?.notes.count ?? 0 > 0, selectedAttributes.selectedNote != nil else {return}
+        deleteNote(note: selectedAttributes.selectedNote!)
+    }
+    
+    func insertInTrashFolder(note: Note) {
+        guard let trashFolder = foldersList.getFolder(folderType: .trash) else {return}
+        trashFolder.notes.append(note)
+    }
+    
+    private func deleteNote(note: Note) {
         if let index = selectedAttributes.selectedFolder!.notes.firstIndex(where: {
-            $0.id == selectedAttributes.selectedNote!.id
+            $0.id == note.id
         }) {
             let noteToDelete = selectedAttributes.selectedFolder!.notes[index]
             insertInTrashFolder(note: noteToDelete)
             
             selectedAttributes.selectedFolder!.notes.remove(at: index)
-            guard index >= 0 else { return}
+            guard selectedAttributes.selectedNote?.id == note.id, index >= 0 else { return}
             if index >= selectedAttributes.selectedFolder!.notes.count {
                 selectedAttributes.selectedNote = selectedAttributes.selectedFolder!.notes.last
             } else {
                 selectedAttributes.selectedNote = selectedAttributes.selectedFolder?.notes[index]
             }
         }
-    }
-    
-    func insertInTrashFolder(note: Note) {
-        guard let trashFolder = foldersList.getFolder(folderType: .trash) else {return}
-        trashFolder.notes.append(note)
     }
 }
 

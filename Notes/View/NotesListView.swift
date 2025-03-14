@@ -11,6 +11,7 @@ struct NotesListView: View {
     @ObservedObject var selectedAttributes: SelectedAttributes
     @State private var hoveredNote: Note?
     @FocusState var isFocused: Bool
+    let onDeleteNote: (Note)->Void?
     var selectedIndex: Int {
         if let note = selectedAttributes.selectedNote {
             return selectedAttributes.selectedFolder?.notes.firstIndex(of: note) ?? -1
@@ -25,6 +26,13 @@ struct NotesListView: View {
             ForEach(selectedAttributes.selectedFolder?.notes ?? [], id: \.id, content: {
                 note in
                     NoteRowView(selectedAttributes: selectedAttributes, hoveredNote: $hoveredNote, note: note)
+                    .swipeActions(edge: .trailing) {
+                        Button(role: .destructive) {
+                            onDeleteNote(note)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
             })
             .focusable()
             .focused($isFocused)
@@ -61,5 +69,5 @@ struct NotesListView: View {
 }
 
 #Preview {
-    NotesListView(selectedAttributes: SelectedAttributes())
+    NotesListView(selectedAttributes: SelectedAttributes(), onDeleteNote: {_ in})
 }
