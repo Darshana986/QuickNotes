@@ -14,12 +14,14 @@ class Note: Identifiable, ObservableObject, Equatable, Hashable {
     var content: String
     var date: Date
     @Published var color: NoteColor
+    @Published var starred: Bool
     
-    init(title: String, content: String, color: NoteColor = .grey) {
+    init(title: String, content: String, color: NoteColor = .grey, starred: Bool = false) {
         self.title = title
         self.content = content
         self.date = Date()
         self.color = color
+        self.starred = starred
     }
     
     static func == (lhs: Note, rhs: Note) -> Bool {

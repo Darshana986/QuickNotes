@@ -10,50 +10,54 @@ import SwiftUI
 struct NotesListView: View {
     @ObservedObject var selectedAttributes: SelectedAttributes
     @State private var hoveredNote: Note?
+    @FocusState var isFocused: Bool
+    var selectedIndex: Int {
+        if let note = selectedAttributes.selectedNote {
+            return selectedAttributes.selectedFolder?.notes.firstIndex(of: note) ?? -1
+        } else {
+            return -1
+        }
+    }
+    
+    
     var body: some View {
-        List(selectedAttributes.selectedFolder?.notes ?? [], selection: $selectedAttributes.selectedNote) { note in
-            VStack(alignment: .leading, spacing: 4, content: {
-                Text(note.title)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Text(note.content)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                
-                HStack {
-                    Text(note.formattedDate(date: note.date))
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    ColorPickerButton(selectedColor: Binding(
-                        get: { note.color },
-                        set: { note.color = $0 }
-                    ), size: 12)
-                    .background(Color.clear)
-                }
-                .padding(.top, 7)
+        List(selection: $selectedAttributes.selectedNote) {
+            ForEach(selectedAttributes.selectedFolder?.notes ?? [], id: \.id, content: {
+                note in
+                    NoteRowView(selectedAttributes: selectedAttributes, hoveredNote: $hoveredNote, note: note)
             })
-            .listRowSeparator(.visible)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical,10)
-            .padding(.horizontal, 7)
-            .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(selectedAttributes.selectedNote == note ? Color.blue.opacity(0.2) : hoveredNote == note ? Color.gray.opacity(0.2) : Color.clear)
-            )
-            .contentShape(Rectangle())
-            .onTapGesture {
-                selectedAttributes.selectedNote = note
-            }
-            .onHover { isHovering in
-                hoveredNote = isHovering ? note : nil
-            }
+            .focusable()
+            .focused($isFocused)
+            .focusEffectDisabled()
         }
         .listStyle(.inset)
+        .onKeyPress(action: {keyPress in
+            switch keyPress.key {
+            case .downArrow:
+                let newSelectedIndex = selectedIndex + 1
+                guard let note = getNote(newSelectedIndex) else { return .ignored }
+                DispatchQueue.main.async {
+                    selectedAttributes.selectedNote = note
+                }
+            case .upArrow:
+                let newSelectedIndex = selectedIndex - 1
+                guard let note = getNote(newSelectedIndex) else { return .ignored }
+                DispatchQueue.main.async {
+                    selectedAttributes.selectedNote = note
+                }
+            default:
+                return .ignored
+            }
+            return .handled
+        })
     }
+    
+    private func getNote(_ index: Int) -> Note? {
+        guard let notes = selectedAttributes.selectedFolder?.notes, !notes.isEmpty else { return nil }
+        guard index >= 0 , index < notes.count else { return nil }
+        return notes[index]
+    }
+  
 }
 
 #Preview {

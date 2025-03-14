@@ -58,8 +58,9 @@ struct ContentView: View {
     
     func addNote() {
         let newNote = Note(title: "New Note", content: "This is a new note")
-        selectedAttributes.selectedFolder?.notes.insert(newNote, at: 0)
-        selectedAttributes.selectedNote = newNote
+        let folder = selectedAttributes.selectedFolder
+        folder?.notes.insert(newNote, at: 0)
+        selectedAttributes.selectedFolder = folder
     }
     
     func deleteNote() {

@@ -21,6 +21,13 @@ struct NoteEditorView: View {
                     }
                     .buttonStyle(PlainButtonStyle())
                     Spacer()
+                    Button(action: {
+                        note.starred.toggle()
+                    }){
+                        Image(systemName: note.starred ? "star.fill" : "star")
+                            .foregroundColor(note.starred ? Color.yellow : Color.gray)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                     ColorPickerButton(selectedColor: Binding(
                         get: { note.color },
                         set: { note.color = $0 }
